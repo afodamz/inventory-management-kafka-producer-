@@ -1,5 +1,6 @@
 package com.mintyn.inventorymanagement.controllers;
 
+import com.mintyn.inventorymanagement.common.PagedResponse;
 import com.mintyn.inventorymanagement.dto.ProductCreateDto;
 import com.mintyn.inventorymanagement.dto.ProductUpdateDto;
 import com.mintyn.inventorymanagement.models.Products;
@@ -41,9 +42,11 @@ public class ProductController {
     }
 
     @GetMapping (produces = "application/json")
-    public ResponseEntity<?> getAllProducts() {
-        log.info("### Fetching the list of all products");
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+    public PagedResponse<?> getAllProducts(
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = "100") Integer size
+    ) {
+        return productService.getAllProducts(page, size);
     }
 }
 

@@ -1,5 +1,6 @@
 package com.mintyn.inventorymanagement.services;
 
+import com.mintyn.inventorymanagement.common.PagedResponse;
 import com.mintyn.inventorymanagement.dto.ProductCreateDto;
 import com.mintyn.inventorymanagement.dto.ProductUpdateDto;
 import com.mintyn.inventorymanagement.models.Products;
@@ -13,5 +14,5 @@ public interface ProductService {
 
     Products updateProduct(String id, ProductUpdateDto productDto);
 
-    List<Products> getAllProducts();
+    PagedResponse<Products> getAllProducts(int page, int size);
 }

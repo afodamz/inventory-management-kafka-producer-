@@ -1,5 +1,6 @@
 package com.mintyn.inventorymanagement.services.impl;
 
+import com.mintyn.inventorymanagement.common.PagedResponse;
 import com.mintyn.inventorymanagement.dto.ProductCreateDto;
 import com.mintyn.inventorymanagement.dto.ProductUpdateDto;
 import com.mintyn.inventorymanagement.exceptions.ProductNotExistsException;
@@ -8,8 +9,14 @@ import com.mintyn.inventorymanagement.repositories.ProductRepository;
 import com.mintyn.inventorymanagement.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +29,8 @@ import static org.springframework.util.StringUtils.hasLength;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
+
+    private static final String DATE = "createdAt";
 
     @Override
     public Products createProduct(ProductCreateDto productDto) {
@@ -63,7 +72,16 @@ public class ProductServiceImpl implements ProductService {
 
     // ToDo: Add pagination
     @Override
-    public List<Products> getAllProducts() {
-        return repository.findAll();
+    public PagedResponse<Products> getAllProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, DATE);
+        Page<Products> products= repository.findByPagination(pageable);
+
+        if(products.getNumberOfElements() == 0) {
+            return new PagedResponse<>(Collections.emptyList(), products.getNumber(), products.getSize(), products.getTotalElements(),
+                    products.getTotalPages(), products.isLast(), products.isFirst(), products.isEmpty());
+        }
+
+        return new PagedResponse<>(products.toList(), products.getNumber(),
+                products.getSize(), products.getTotalElements(), products.getTotalPages(), products.isLast(), products.isFirst(), products.isEmpty());
     }
 }
